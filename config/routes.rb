@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      post 'sign-up', to: 'users#create'
+      resources :users, only: :create
       get 'sign-in', to: 'sessions#authenticate_user'
     end
   end
