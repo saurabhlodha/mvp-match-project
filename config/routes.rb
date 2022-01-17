@@ -6,7 +6,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :users, only: :create
+      resources :users, only: :create do
+        post :deposit, on: :collection
+      end
+
       get 'sign-in', to: 'sessions#authenticate_user'
       resources :products
     end
