@@ -11,7 +11,9 @@ Rails.application.routes.draw do
       end
 
       get 'sign-in', to: 'sessions#authenticate_user'
-      resources :products
+      resources :products do
+        post :buy
+      end
     end
   end
 end
