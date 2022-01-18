@@ -16,6 +16,7 @@ class Api::V1::ProductsController < Api::V1::BaseApiController
   # POST /products
   def create
     @product = current_user.products.new(product_params)
+    authorize @product
 
     if @product.save
       render json: @product, status: :created
@@ -26,6 +27,8 @@ class Api::V1::ProductsController < Api::V1::BaseApiController
 
   # PATCH/PUT /products/1
   def update
+    authorize @product
+
     if @product.update(product_params)
       render json: @product
     else
@@ -35,6 +38,8 @@ class Api::V1::ProductsController < Api::V1::BaseApiController
 
   # DELETE /products/1
   def destroy
+    authorize @product
+
     @product.destroy
   end
 
@@ -42,6 +47,8 @@ class Api::V1::ProductsController < Api::V1::BaseApiController
   # We can move all this business logic to a service class object
   def buy
     @product = Product.find(buy_product_params[:product_id])
+    authorize @product
+
     amount = buy_product_params[:amount].to_i
     total_price = amount * @product.cost
 
@@ -67,7 +74,7 @@ class Api::V1::ProductsController < Api::V1::BaseApiController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product
-      @product = current_user.products.find(params[:id])
+      @product = Product.find(params[:id])
     end
 
     def buy_product_params
@@ -88,6 +95,6 @@ class Api::V1::ProductsController < Api::V1::BaseApiController
 
     # Only allow a list of trusted parameters through.
     def product_params
-      params.require(:product).permit(:amount, :cost, :product_name)
+      params.require(:product).permit(:amount_available, :cost, :product_name)
     end
 end

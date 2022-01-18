@@ -11,6 +11,8 @@ class Api::V1::UsersController < Api::V1::BaseApiController
   end
 
   def deposit
+    authorize current_user
+
     if deposit_param > 0 && deposit_param % 5 == 0
       balance = current_user.deposit + deposit_param
       current_user.update_attribute(:deposit, balance)

@@ -1,5 +1,6 @@
 # Api::V1::BaseApiController
 class Api::V1::BaseApiController < ActionController::Base
+  include Pundit
   before_action :authenticate_request!
 
   attr_reader :current_user
@@ -37,6 +38,8 @@ class Api::V1::BaseApiController < ActionController::Base
     }
   end
 
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   private
 
   def http_token
@@ -63,5 +66,10 @@ class Api::V1::BaseApiController < ActionController::Base
 
   def current_user
     @current_user || User.first
+  end
+
+  def user_not_authorized
+    render json: { errors: ['You are not authorized to perform this action'] },
+           status: :unauthorized
   end
 end
