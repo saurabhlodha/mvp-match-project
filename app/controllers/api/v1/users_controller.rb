@@ -22,6 +22,13 @@ class Api::V1::UsersController < Api::V1::BaseApiController
     end
   end
 
+  def reset
+    authorize current_user
+
+    current_user.update_attribute(:deposit, 0)
+    render json: { status: 'Amount reset successfully', user: current_user.reload }, status: :ok
+  end
+
   private
 
   def deposit_param

@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :users, only: :create do
         post :deposit, on: :collection
+        post :reset, on: :collection
       end
 
       get 'sign-in', to: 'sessions#authenticate_user'

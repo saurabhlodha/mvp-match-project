@@ -32,7 +32,7 @@ RSpec.describe "Users", type: :request do
     end
   end
 
-  describe "post /deposit" do
+  describe "post /reset" do
     let(:valid_attributes) { { amount: 100 } }
 
     context 'when user is a buyer' do
@@ -63,6 +63,38 @@ RSpec.describe "Users", type: :request do
         expect(response).to have_http_status(:unauthorized)
         logged_in_user.reload
         expect(logged_in_user.deposit).to be_zero
+      end
+    end
+  end
+
+  describe "post /reset" do
+    context 'when user is a buyer' do
+      let(:logged_in_user) { FactoryBot.create(:buyer, deposit: 25) }
+
+      it "resets the deposit" do
+        post reset_api_v1_users_url, headers: valid_headers, as: :json
+
+        logged_in_user.reload
+        expect(logged_in_user.deposit).to be_zero
+      end
+
+      it "renders a JSON response with the user" do
+        post reset_api_v1_users_url, headers: valid_headers, as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to match(a_string_including("application/json"))
+      end
+    end
+
+    context 'when user is a seller' do
+      let(:logged_in_user) { FactoryBot.create(:seller, deposit: 10) }
+
+      it "renders a JSON response with unauthorized error" do
+        post reset_api_v1_users_url, headers: valid_headers, as: :json
+
+        expect(response).to have_http_status(:unauthorized)
+        logged_in_user.reload
+        expect(logged_in_user.deposit).to_not be_zero
       end
     end
   end
